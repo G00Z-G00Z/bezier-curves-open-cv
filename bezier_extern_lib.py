@@ -14,8 +14,8 @@ def calculate_control_point(P1, P2, scale=1):
 # Define the nodes for the first quadratic Bezier curve
 nodes1 = np.asfortranarray(
     [
-        [0.0, 0.5, 1.0],  # x-coordinates
-        [0.0, 1.0, 0.0],  # y-coordinates
+        [0.0, 4.0, 6.0],  # x-coordinates
+        [0.0, 7.0, 3.0],  # y-coordinates
     ]
 )
 
@@ -26,7 +26,7 @@ curve1 = bezier.Curve(nodes1, degree=2)
 P2 = nodes1[:, -1]
 
 # Define the end control point of the second curve
-P4 = [4.0, 10.0]
+P4 = [9.0, 10.0]
 
 # Calculate the control point P3 for the second Bezier curve
 P3 = calculate_control_point(nodes1[:, 1], P2)
