@@ -30,46 +30,48 @@ def sample_points(start, end, interval=10):
     return sampled_points
 
 
+def draw_bezier_curve(img, points):
+    # We need at least three points to draw a bezier curve
+    if len(points) >= 3:
+        # Clear the image and redraw everything
+        img = original_img.copy()
+
+        # Draw all the points
+        for point in points:
+            cv2.circle(img, point, 3, (0, 255, 0), -1)
+
+        # Now draw the bezier curves
+        for i in range(2, len(points), 3):
+            # p0, p1, p2 are the start, control, and end points of the bezier curve, respectively
+            p0, p1, p2 = points[i - 2], points[i - 1], points[i]
+            bezier_curve_points = calculate_bezier_points(p0, p1, p2, num_points=100)
+
+            # Draw the Bezier curve by connecting each pair of consecutive points
+            for j in range(1, len(bezier_curve_points)):
+                cv2.line(
+                    img,
+                    bezier_curve_points[j - 1],
+                    bezier_curve_points[j],
+                    (255, 0, 0),
+                    2,
+                )
+
+            # Optionally, save the Bezier curve points if needed
+            # bezier_points.extend(bezier_curve_points) # Uncomment if you want to save bezier curve points
+
+    # Refresh the image
+    cv2.imshow("image", img)
+    return img
+
+
+# Inside your mouse callback
 def draw_circle(event, x, y, flags, param):
     global points, img
     if event == cv2.EVENT_LBUTTONDOWN:
-        # Append the new point
         points.append((x, y))
 
-        # We need at least two points to form a line
-        if len(points) > 1:
-            # Clear the image and redraw everything
-            img = original_img.copy()
-
-            # Draw all the points
-            for point in points:
-                cv2.circle(img, point, 3, (0, 255, 0), -1)
-
-            # Redraw each bezier curve segment
-            for i in range(1, len(points)):
-                # To draw a Bezier curve, we need at least 3 points
-                if i < 2:
-                    # Draw a straight line for the first segment
-                    cv2.line(img, points[i - 1], points[i], (255, 0, 0), 2)
-                else:
-                    # Use the midpoint of the previous segment as the control point
-                    control_point = (
-                        np.array(points[i - 2]) + np.array(points[i - 1])
-                    ) // 2
-                    bezier_points = calculate_bezier_points(
-                        points[i - 2], control_point, points[i - 1]
-                    )
-                    for j in range(1, len(bezier_points)):
-                        cv2.line(
-                            img,
-                            tuple(bezier_points[j - 1]),
-                            tuple(bezier_points[j]),
-                            (255, 0, 0),
-                            2,
-                        )
-
-        # Refresh the image
-        cv2.imshow("image", img)
+        # Update the image with the new point and possibly a new bezier curve
+        img = draw_bezier_curve(img, points)
 
 
 # Load an image
