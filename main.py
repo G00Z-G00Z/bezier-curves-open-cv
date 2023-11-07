@@ -31,33 +31,42 @@ def sample_points(start, end, interval=10):
 
 
 def draw_bezier_curve(img, points):
-    # We need at least three points to draw a bezier curve
+    # Check if we have enough points to draw a bezier curve
     if len(points) >= 3:
         # Clear the image and redraw everything
         img = original_img.copy()
 
-        # Draw all the points
+        # Draw all points as circles
         for point in points:
             cv2.circle(img, point, 3, (0, 255, 0), -1)
 
-        # Now draw the bezier curves
-        for i in range(2, len(points), 3):
-            # p0, p1, p2 are the start, control, and end points of the bezier curve, respectively
-            p0, p1, p2 = points[i - 2], points[i - 1], points[i]
-            bezier_curve_points = calculate_bezier_points(p0, p1, p2, num_points=100)
+        # Draw the initial bezier curve with the first three points
+        p0, p1, p2 = points[0], points[1], points[2]
+        bezier_curve_points = calculate_bezier_points(p0, p1, p2)
 
-            # Draw the Bezier curve by connecting each pair of consecutive points
-            for j in range(1, len(bezier_curve_points)):
-                cv2.line(
-                    img,
-                    bezier_curve_points[j - 1],
-                    bezier_curve_points[j],
-                    (255, 0, 0),
-                    2,
-                )
+        # Draw the bezier curve
+        for j in range(1, len(bezier_curve_points)):
+            cv2.line(
+                img, bezier_curve_points[j - 1], bezier_curve_points[j], (255, 0, 0), 2
+            )
 
-            # Optionally, save the Bezier curve points if needed
-            # bezier_points.extend(bezier_curve_points) # Uncomment if you want to save bezier curve points
+        # Draw the rest of the bezier curves
+        for i in range(3, len(points), 2):
+            p0 = points[i - 1]  # Last point of the previous curve
+            p1 = points[i]  # Control point
+            if i + 1 < len(points):
+                p2 = points[i + 1]  # End point of the current curve
+                bezier_curve_points = calculate_bezier_points(p0, p1, p2)
+
+                # Draw the bezier curve
+                for j in range(1, len(bezier_curve_points)):
+                    cv2.line(
+                        img,
+                        bezier_curve_points[j - 1],
+                        bezier_curve_points[j],
+                        (255, 0, 0),
+                        2,
+                    )
 
     # Refresh the image
     cv2.imshow("image", img)
