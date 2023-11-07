@@ -3,7 +3,7 @@ import numpy as np
 from bezier_lib.bezier_calc import calculate_bezier_points
 
 points = []  # List to store points
-image_path = "./images/sample-classroom.jpeg"
+image_path = "./images/3.jpeg"
 
 
 def sample_points(start, end, interval=10):
