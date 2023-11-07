@@ -1,6 +1,9 @@
 import cv2
 import numpy as np
-from bezier_lib.bezier_calc import calculate_bezier_points
+from bezier_lib.bezier_calc import (
+    calculate_bezier_points,
+    calculate_bezier_points_and_angles,
+)
 
 points = []  # List to store points
 image_path = "./images/3.jpeg"
@@ -42,7 +45,8 @@ def draw_bezier_curve(img, points):
 
         # Draw the initial bezier curve with the first three points
         p0, p1, p2 = points[0], points[1], points[2]
-        bezier_curve_points = calculate_bezier_points(p0, p1, p2)
+        bezier_curve_points, angles = calculate_bezier_points_and_angles(p0, p1, p2)
+        print(angles)
 
         # Draw the bezier curve
         for j in range(1, len(bezier_curve_points)):
@@ -56,7 +60,10 @@ def draw_bezier_curve(img, points):
             p1 = points[i]  # Control point
             if i + 1 < len(points):
                 p2 = points[i + 1]  # End point of the current curve
-                bezier_curve_points = calculate_bezier_points(p0, p1, p2)
+                bezier_curve_points, angles = calculate_bezier_points_and_angles(
+                    p0, p1, p2
+                )
+                print(angles)
 
                 # Draw the bezier curve
                 for j in range(1, len(bezier_curve_points)):
