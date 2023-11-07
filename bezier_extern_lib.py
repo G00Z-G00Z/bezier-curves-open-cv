@@ -2,6 +2,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import bezier
 
+
+def calculate_control_point(P1, P2, scale=1):
+    # Vector from P1 to P2
+    v = np.array(P2) - np.array(P1)
+    # P3 should be on the line from P1 through P2, we scale the vector if needed
+    P3 = np.array(P2) + scale * v
+    return P3.tolist()
+
+
 # Define the nodes for the first quadratic Bezier curve
 nodes1 = np.asfortranarray(
     [
@@ -13,15 +22,18 @@ nodes1 = np.asfortranarray(
 # Create the first Bezier curve
 curve1 = bezier.Curve(nodes1, degree=2)
 
+# The end point of the first curve and start of the second curve
+P2 = nodes1[:, -1]
+
+# Define the end control point of the second curve
+P4 = [4.0, 10.0]
+
+# Calculate the control point P3 for the second Bezier curve
+P3 = calculate_control_point(nodes1[:, 1], P2)
+
 # Define the nodes for the second quadratic Bezier curve
-# The first point (1.0, 0.0) is the same as the last point of the first curve
-# The second point (1.5, -1.0) is chosen to ensure the gradient is continuous
-# The third point (2.0, 0.0) is the end point of the second curve
 nodes2 = np.asfortranarray(
-    [
-        [1.0, 1.5, 2.0],  # x-coordinates
-        [0.0, -1.0, 0.0],  # y-coordinates
-    ]
+    [[P2[0], P3[0], P4[0]], [P2[1], P3[1], P4[1]]]  # x-coordinates  # y-coordinates
 )
 
 # Create the second Bezier curve
