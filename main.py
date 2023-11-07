@@ -42,7 +42,7 @@ cv2.imshow("image", img)
 cv2.waitKey(0)
 
 # Save the resulting image
-cv2.imwrite("image_with_lines.jpg", img)
+cv2.imwrite("./exports/image_with_lines.jpg", img)
 
 # Close all windows
 cv2.destroyAllWindows()
