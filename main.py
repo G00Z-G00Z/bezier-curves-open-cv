@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from bezier_lib.bezier_calc import calculate_bezier_points
 
 points = []  # List to store points
 image_path = "./images/sample-classroom.jpeg"
@@ -30,32 +31,56 @@ def sample_points(start, end, interval=10):
 
 
 def draw_circle(event, x, y, flags, param):
-    global points
+    global points, img
     if event == cv2.EVENT_LBUTTONDOWN:
-        # Draw a circle at the clicked point
-        cv2.circle(img, (x, y), 3, (0, 255, 0), -1)
-
         # Append the new point
         points.append((x, y))
 
-        # If we have at least two points, draw the connecting line
-        if len(points) >= 2:
-            cv2.line(img, points[-2], points[-1], (255, 0, 0), 2)
+        # We need at least two points to form a line
+        if len(points) > 1:
+            # Clear the image and redraw everything
+            img = original_img.copy()
 
-            # Get the sampled points and draw them
-            sampled_points = sample_points(points[-2], points[-1])
-            for sp in sampled_points:
-                cv2.circle(img, tuple(sp), 2, (0, 0, 255), -1)
+            # Draw all the points
+            for point in points:
+                cv2.circle(img, point, 3, (0, 255, 0), -1)
+
+            # Redraw each bezier curve segment
+            for i in range(1, len(points)):
+                # To draw a Bezier curve, we need at least 3 points
+                if i < 2:
+                    # Draw a straight line for the first segment
+                    cv2.line(img, points[i - 1], points[i], (255, 0, 0), 2)
+                else:
+                    # Use the midpoint of the previous segment as the control point
+                    control_point = (
+                        np.array(points[i - 2]) + np.array(points[i - 1])
+                    ) // 2
+                    bezier_points = calculate_bezier_points(
+                        points[i - 2], control_point, points[i - 1]
+                    )
+                    for j in range(1, len(bezier_points)):
+                        cv2.line(
+                            img,
+                            tuple(bezier_points[j - 1]),
+                            tuple(bezier_points[j]),
+                            (255, 0, 0),
+                            2,
+                        )
 
         # Refresh the image
         cv2.imshow("image", img)
 
 
 # Load an image
-img = cv2.imread(image_path)
-if img is None:
+original_img = cv2.imread(image_path)
+if original_img is None:
     print("Error: could not load image")
     exit()
+
+# Make a copy of the original image to draw on
+img = original_img.copy()
+
 
 cv2.namedWindow("image")
 cv2.setMouseCallback("image", draw_circle)
