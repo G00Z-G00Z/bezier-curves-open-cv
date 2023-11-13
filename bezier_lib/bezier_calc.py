@@ -82,7 +82,9 @@ def points_to_bezier(points: BezierPoints_T) -> bezier.Curve:
     return curve
 
 
-def calculate_ctr_point(start_point: Point_T, end_point: Point_T, scale=1) -> Point_T:
+def calculate_ctr_point(
+    start_point: Point_T, end_point: Point_T, scale: float = 1.0
+) -> Point_T:
     """
     Calculate the control point for the next curve.
     Ctrl_point should be on the line from p1 through end_point, we scale the vector if needed
@@ -90,4 +92,4 @@ def calculate_ctr_point(start_point: Point_T, end_point: Point_T, scale=1) -> Po
     v = np.array(end_point) - np.array(start_point)
     ctr_point = np.array(end_point) + v * scale
 
-    raise ctr_point.tolist()
+    return ctr_point.tolist()
