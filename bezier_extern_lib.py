@@ -14,13 +14,8 @@ from bezier_lib.bezier_calc import (
 # Random waypoints for generating curves
 waypoints: list[Point_T] = [
     (0, 0),
-    (1, 1),
-    (2, 0),
-    (3, 1),
-    (4, 0),
-    (5, 1),
-    (6, 0),
-    (7, 1),
+    (4, 10),
+    (5, 8),
 ]
 
 
@@ -29,8 +24,8 @@ curves: list[bezier.Curve] = []
 for i in range(1, len(waypoints)):
     p1 = waypoints[i - 1]
     p3 = waypoints[i]
-    ctr = calculate_ctr_point(p1, p3)
-    curve = points_to_bezier(p1, ctr, p3)
+    ctr = calculate_ctr_point(p1, p3, scale=1)
+    curve = points_to_bezier((p1, ctr, p3))
     curves.append(curve)
 
 
@@ -54,5 +49,5 @@ for curve in curves:
 # plt.scatter(
 #     nodes2[0, :], nodes2[1, :], color="green", label="Control Points of Second Curve"
 # )
-plt.legend()
+plt.grid()
 plt.show()
