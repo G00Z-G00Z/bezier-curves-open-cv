@@ -1,7 +1,7 @@
 import numpy as np
 import bezier
 
-Point_T = tuple[int, int]
+Point_T = tuple[float, float]
 BezierPoints_T = tuple[Point_T, Point_T, Point_T]
 
 
