@@ -5,6 +5,8 @@ from bezier_lib.bezier_calc import (
     Point_T,
     calculate_bezier_points,
     calculate_bezier_points_and_angles,
+    calculate_ctr_point,
+    points_to_bezier,
 )
 
 points: list[Point_T] = []  # List to store points
@@ -15,12 +17,7 @@ image_path = "./images/3.jpeg"
 IMAGE_TITLE = "Paths"
 
 
-def draw_bezier_curve(img, points):
-    if len(points) < 3:
-        # Refresh the image
-        cv2.imshow(IMAGE_TITLE, img)
-        return img
-
+def draw_bezier_curve(img, points: list[Point_T]):
     # Clear the image and redraw everything
     img = original_img.copy()
 
@@ -28,35 +25,39 @@ def draw_bezier_curve(img, points):
     for point in points:
         cv2.circle(img, point, 3, (0, 255, 0), -1)
 
-    # Draw the initial bezier curve with the first three points
-    p0, p1, p2 = points[0], points[1], points[2]
-    bezier_curve_points, angles = calculate_bezier_points_and_angles(p0, p1, p2)
-    print(angles)
+    if len(points) < 2:
+        # Refresh the image
+        cv2.imshow(IMAGE_TITLE, img)
+        return img
 
-    # Draw the bezier curve
-    for j in range(1, len(bezier_curve_points)):
-        cv2.line(
-            img, bezier_curve_points[j - 1], bezier_curve_points[j], (255, 0, 0), 2
-        )
+    if len(points) == 2:
+        first_ctr_point = (np.array(points[1]) + np.array(points[0])) / 2
+        ctrl_points.append(first_ctr_point.tolist())
 
-    # Draw the rest of the bezier curves
-    for i in range(3, len(points), 2):
-        p0 = points[i - 1]  # Last point of the previous curve
-        p1 = points[i]  # Control point
-        if i + 1 < len(points):
-            p2 = points[i + 1]  # End point of the current curve
-            bezier_curve_points, angles = calculate_bezier_points_and_angles(p0, p1, p2)
-            print(angles)
+    prev_point = points[-2]
+    last_point = points[-1]
+    prev_ctr_point = ctrl_points[-1]
 
-            # Draw the bezier curve
-            for j in range(1, len(bezier_curve_points)):
-                cv2.line(
-                    img,
-                    bezier_curve_points[j - 1],
-                    bezier_curve_points[j],
-                    (255, 0, 0),
-                    2,
-                )
+    bezier_points: BezierPoints_T = (prev_point, prev_ctr_point, last_point)
+    curves.append(bezier_points)
+
+    # Calculate next ctr point
+    new_ctr_point = calculate_ctr_point(bezier_points, last_point, scale=0.5)
+    ctrl_points.append(new_ctr_point)
+
+    # Draw the beziers curves
+
+    # Plot both curves
+    s_vals = np.linspace(0, 1, 100)
+
+    # Plot all the curves
+    for bezier_points in curves:
+        curve = points_to_bezier(bezier_points)
+        coordinates = curve.evaluate_multi(s_vals)
+        x = coordinates[0, :]
+        y = coordinates[1, :]
+        coordinates = np.array([x, y]).T.reshape(-1, 1, 2).astype(np.int32)
+        cv2.polylines(img, [coordinates], False, (0, 0, 255), 2)
 
     # Refresh the image
     cv2.imshow(IMAGE_TITLE, img)
