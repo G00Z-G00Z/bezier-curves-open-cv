@@ -1,4 +1,8 @@
 import numpy as np
+import bezier
+
+Point_T = tuple[int, int]
+BezierPoints_T = tuple[Point_T, Point_T, Point_T]
 
 
 def calculate_bezier_points(p0, p1, p2, num_points=100):
@@ -59,3 +63,31 @@ def calculate_bezier_points_and_angles(p0, p1, p2, num_points=100):
     angles.append(angles[-1])  # Repeat the last calculable angle
 
     return bezier_points, angles
+
+
+def points_to_bezier(points: BezierPoints_T) -> bezier.Curve:
+    """
+    Convert a tuple of three points to a bezier curve.
+    """
+    p1, p2, p3 = points
+
+    # Get the x and y coordinates of the points
+    x = [p[0] for p in points]
+    y = [p[1] for p in points]
+
+    nodes = np.asfortranarray([x, y])
+
+    curve = bezier.Curve(nodes, degree=2)
+
+    return curve
+
+
+def calculate_ctr_point(start_point: Point_T, end_point: Point_T, scale=1) -> Point_T:
+    """
+    Calculate the control point for the next curve.
+    Ctrl_point should be on the line from p1 through end_point, we scale the vector if needed
+    """
+    v = np.array(end_point) - np.array(start_point)
+    ctr_point = np.array(end_point) + v * scale
+
+    raise ctr_point.tolist()
