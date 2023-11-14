@@ -1,4 +1,6 @@
 import numpy as np
+import sympy as sp
+
 import bezier
 
 Point_T = tuple[float, float]
@@ -94,3 +96,50 @@ def calculate_ctr_point(
     ctr_point = np.array(end_point) + v * scale
 
     return ctr_point.tolist()
+
+
+def curvature_of_bezier(curve: bezier.Curve, s_values: np.ndarray):
+    curvatures = []
+    for s in np.nditer(s_values):
+        first_derivative = curve.evaluate_hodograph(s)
+        second_derivative = curve.evaluate_hodograph(s, derivative=2)
+
+        x_prime, y_prime = first_derivative[0, 0], first_derivative[1, 0]
+        x_double_prime, y_double_prime = (
+            second_derivative[0, 0],
+            second_derivative[1, 0],
+        )
+
+        numerator = abs(x_prime * y_double_prime - y_prime * x_double_prime)
+        denominator = (x_prime**2 + y_prime**2) ** 1.5
+
+        curvature = numerator / denominator if denominator != 0 else 0
+        curvatures.append(curvature)
+
+    return np.array(curvatures)
+
+
+def calculate_curvature(curve: bezier.Curve, s_values: np.ndarray):
+    # Convert the curve to a symbolic representation
+    symbolic_curve = curve.to_symbolic()
+
+    # Derive the first and second derivatives
+    x, y = symbolic_curve
+    s = sp.symbols("s")
+    x_prime = sp.diff(x, s)
+    y_prime = sp.diff(y, s)
+    x_double_prime = sp.diff(x_prime, s)
+    y_double_prime = sp.diff(y_prime, s)
+
+    # Define curvature calculation function
+    curvature_function = sp.lambdify(
+        s,
+        abs(x_prime * y_double_prime - y_prime * x_double_prime)
+        / ((x_prime**2 + y_prime**2) ** 1.5),
+        "numpy",
+    )
+
+    # Compute curvature for each s value
+    curvatures = curvature_function(s_values)
+
+    return np.array(curvatures)
