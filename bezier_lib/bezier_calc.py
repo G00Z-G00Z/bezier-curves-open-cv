@@ -134,7 +134,7 @@ def calculate_curvature(curve: bezier.Curve, s_values: np.ndarray):
     # Define curvature calculation function
     curvature_function = sp.lambdify(
         s,
-        abs(x_prime * y_double_prime - y_prime * x_double_prime)
+        (x_prime * y_double_prime - y_prime * x_double_prime)
         / ((x_prime**2 + y_prime**2) ** 1.5),
         "numpy",
     )
