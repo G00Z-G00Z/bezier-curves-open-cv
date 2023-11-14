@@ -3,8 +3,6 @@ import numpy as np
 from bezier_lib.bezier_calc import (
     BezierPoints_T,
     Point_T,
-    calculate_bezier_points,
-    calculate_bezier_points_and_angles,
     calculate_ctr_point,
     points_to_bezier,
 )
