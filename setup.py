@@ -15,7 +15,7 @@ setup(
     long_description_content_type="text/markdown",
     author="g00z-g00z",
     license="MIT",
-    install_requires=["numpy", "bezier"],
+    install_requires=["numpy", "bezier", "sympy"],
     test_requires=["pytest"],
     extras_require={"dev": ["pytest", "twine"]},
     setup_requires=["pytest-runner"],
