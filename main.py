@@ -15,7 +15,8 @@ image_path = "./images/3.jpeg"
 IMAGE_TITLE = "Paths"
 
 
-def draw_bezier_curve(img, points: list[Point_T]):
+def draw_bezier_curve(points: list[Point_T]):
+    global original_img
     # Clear the image and redraw everything
     img = original_img.copy()
 
@@ -64,12 +65,12 @@ def draw_bezier_curve(img, points: list[Point_T]):
 
 # Inside your mouse callback
 def draw_circle(event, x, y, flags, param):
-    global points, img
+    global points, copy_of_image
     if event == cv2.EVENT_LBUTTONDOWN:
         points.append((x, y))
 
         # Update the image with the new point and possibly a new bezier curve
-        img = draw_bezier_curve(img, points)
+        copy_of_image = draw_bezier_curve(points)
 
 
 # Load an image
@@ -79,17 +80,17 @@ if original_img is None:
     exit()
 
 # Make a copy of the original image to draw on
-img = original_img.copy()
+copy_of_image = original_img.copy()
 
 
 cv2.namedWindow(IMAGE_TITLE)
 cv2.setMouseCallback(IMAGE_TITLE, draw_circle)
 
 # Display the image and wait for a key press
-cv2.imshow(IMAGE_TITLE, img)
+cv2.imshow(IMAGE_TITLE, copy_of_image)
 cv2.waitKey(0)
 
 # Save the image with lines and sampled points
-cv2.imwrite("./exports/image_with_lines_and_samples.jpg", img)
+cv2.imwrite("./exports/image_with_lines_and_samples.jpg", copy_of_image)
 
 cv2.destroyAllWindows()
