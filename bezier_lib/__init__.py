@@ -4,4 +4,5 @@ from .bezier_calc import (
     calculate_ctr_point,
     Point_T,
     BezierPoints_T,
+    from_waypoints_ctr_to_bezier,
 )

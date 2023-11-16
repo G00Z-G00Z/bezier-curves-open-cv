@@ -61,3 +61,25 @@ def calculate_curvature(curve: bezier.Curve, s_values: np.ndarray):
     curvatures = curvature_function(s_values)
 
     return np.array(curvatures)
+
+
+def from_waypoints_ctr_to_bezier(
+    waypoints: list[Point_T], ctr_points: list[Point_T], scale: float = 1.0
+) -> list[BezierPoints_T]:
+    # Check that the number of points and control points match
+    if len(waypoints) != len(ctr_points):
+        raise ValueError("Number of points and control points must match")
+
+    # Create a list of bezier curves
+    bezier_curves = []
+
+    # Iterate over the points and control points
+    for i in range(1, len(waypoints)):
+        prev_point = waypoints[i - 1]
+        prev_ctr_point = ctr_points[i - 1]
+        point = waypoints[i]
+
+        bezier_curve: BezierPoints_T = (prev_point, prev_ctr_point, point)
+        bezier_curves.append(bezier_curve)
+
+    return bezier_curves
