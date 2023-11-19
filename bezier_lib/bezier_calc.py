@@ -60,7 +60,16 @@ def calculate_curvature(curve: bezier.Curve, s_values: np.ndarray):
     # Compute curvature for each s value
     curvatures = curvature_function(s_values)
 
-    return np.array(curvatures)
+    results = np.array(curvatures)
+
+    if results.size > 1:
+        return results
+
+    # Adjust for straight lines
+    # Repeat the value for each s value
+    results = np.repeat(results, len(s_values))
+
+    return results
 
 
 def from_waypoints_ctr_to_bezier(
