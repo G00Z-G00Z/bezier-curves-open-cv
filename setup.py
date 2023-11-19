@@ -8,7 +8,7 @@ with open(f"./{package_name}/README.md", "r") as f:
 setup(
     name=package_name,
     packages=find_packages(include=[package_name]),
-    version="0.0.2",
+    version="0.0.3",
     description="Bezier functions for calculating bezier points and angles",
     long_description=long_description,
     url="google.com",
